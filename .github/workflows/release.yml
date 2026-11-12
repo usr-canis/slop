@@ -1,0 +1,83 @@
+name: Release
+
+# Two ways to release (both build a signed APK and publish a GitHub Release):
+#  1. Push a tag like v1.2.3.
+#  2. Push a commit whose message contains [release]; the version is read from version.txt
+#     and the tag is created automatically.
+on:
+  push:
+    tags: ["v*"]
+    branches: ["**"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    if: github.ref_type == 'tag' || contains(github.event.head_commit.message, '[release]')
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      KEYSTORE_B64: ${{ secrets.TELLTALE_KEYSTORE_BASE64 }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: "21"
+      - uses: gradle/actions/setup-gradle@v6
+      - name: Work out version
+        run: |
+          if [ "$GITHUB_REF_TYPE" = "tag" ]; then V="$GITHUB_REF_NAME"; else V="v$(tr -d ' \n' < version.txt)"; fi
+          echo "VERSION=$V" >> "$GITHUB_ENV"
+          echo "Releasing $V"
+      - name: Install Android SDK platform 37
+        run: yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-37.0" "build-tools;37.0.0" > /dev/null
+
+      - name: Restore signing key (from GitHub secrets)
+        id: key
+        run: |
+          if [ -n "$KEYSTORE_B64" ]; then
+            echo "$KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/release.jks"
+            echo "TELLTALE_KEYSTORE_PATH=$RUNNER_TEMP/release.jks" >> "$GITHUB_ENV"
+            echo "signed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::warning::TELLTALE_KEYSTORE_BASE64 secret not set - building a PREVIEW APK signed with a temporary key."
+            echo "signed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Test and build release APK
+        env:
+          TELLTALE_KEYSTORE_PASSWORD: ${{ secrets.TELLTALE_KEYSTORE_PASSWORD }}
+          TELLTALE_KEY_ALIAS: ${{ secrets.TELLTALE_KEY_ALIAS }}
+          TELLTALE_KEY_PASSWORD: ${{ secrets.TELLTALE_KEY_PASSWORD }}
+        run: ./gradlew --no-configuration-cache :app:testDebugUnitTest :app:lintDebug :app:assembleRelease -PappVersion=${VERSION}
+
+      - name: Prepare files
+        run: |
+          mkdir dist
+          cp app/build/outputs/apk/release/app-release.apk "dist/telltale-${VERSION}.apk"
+          (cd dist && sha256sum *.apk > SHA256SUMS.txt)
+          rm -f "$RUNNER_TEMP/release.jks"
+          {
+            echo "Telltale ${VERSION}"
+            echo
+            if [ "${{ steps.key.outputs.signed }}" != "true" ]; then
+              echo "**Preview build** - signed with a temporary key because the signing secrets are not set up yet."
+              echo "When you switch to the real key, uninstall this version once before installing the next one."
+              echo
+            fi
+            echo "Install: download the .apk below on your phone and open it."
+          } > dist/NOTES.md
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: ${{ env.VERSION }}
+          name: Telltale ${{ env.VERSION }}
+          target_commitish: ${{ github.sha }}
+          files: |
+            dist/*.apk
+            dist/SHA256SUMS.txt
+          body_path: dist/NOTES.md
+          generate_release_notes: true

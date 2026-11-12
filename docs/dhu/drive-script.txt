@@ -1,0 +1,28 @@
+fuel 72
+range 410
+lowfuel off
+odometer 48211 12
+tollcard insert
+compass 90 0 0
+location 52.5200 13.4050 5 34 8 90
+speed 8
+accel 0.3 0.1 9.8
+gyro 0.01 0.00 0.02
+sleep 2
+speed 14
+compass 95 0 0
+location 52.5201 13.4062 5 34 14 95
+accel 0.8 -0.2 9.8
+gyro 0.02 0.01 0.05
+sleep 2
+speed 22
+compass 120 0 0
+location 52.5199 13.4080 5 34 22 120
+accel -0.5 0.6 9.7
+gyro -0.03 0.02 0.08
+odometer 48212 13
+fuel 71
+range 405
+sleep 2
+lowfuel on
+tollcard remove
