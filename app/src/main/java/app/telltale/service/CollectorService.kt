@@ -66,6 +66,7 @@ class CollectorService : LifecycleService() {
         fun createChannel(context: Context) {
             val nm = context.getSystemService(NotificationManager::class.java)
             nm.createNotificationChannel(NotificationChannel(CHANNEL, "Car data collection", NotificationManager.IMPORTANCE_LOW))
+            nm.createNotificationChannel(NotificationChannel(ConnectReminder.CHANNEL, "Open-on-car-screen reminder", NotificationManager.IMPORTANCE_DEFAULT))
         }
 
         /** Background starts may be refused by Android; the car session keeps working without it. */

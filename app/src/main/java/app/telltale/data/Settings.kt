@@ -12,7 +12,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 data class AppSettings(
-    val recording: Boolean = false,
+    /** On by default: records automatically whenever Telltale runs on the car screen. */
+    val recording: Boolean = true,
     val sampleIntervalMs: Long = 1000,
     val units: UnitPref = UnitPref.CAR,
     /** 0 = keep forever */
@@ -29,7 +30,7 @@ class SettingsStore(private val context: Context) {
 
     val settings: Flow<AppSettings> = context.dataStore.data.map { p ->
         AppSettings(
-            recording = p[kRecording] ?: false,
+            recording = p[kRecording] ?: true,
             sampleIntervalMs = p[kInterval] ?: 1000,
             units = p[kUnits]?.let { runCatching { UnitPref.valueOf(it) }.getOrNull() } ?: UnitPref.CAR,
             retentionDays = p[kRetention] ?: 30,

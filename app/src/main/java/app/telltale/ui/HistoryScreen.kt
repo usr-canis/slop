@@ -37,7 +37,7 @@ fun HistoryScreen() {
     val fmt = remember(locale) { SimpleDateFormat("EEE d MMM, HH:mm", locale) }
 
     Column(Modifier.verticalScroll(rememberScrollState()).padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        if (!settings.recording) Text("Recording is off. Turn it on in Settings to build odometer, fuel and range history.",
+        if (!settings.recording) Text("Recording is off. Turn it on in Settings to build odometer, fuel and range history automatically.",
             style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         HistoryChart("Odometer", odo.map { it.value.toFloat() }, odo.lastOrNull()?.let { Units.distanceKm(it.value, imperial, 0) + " " + Units.distanceUnit(imperial) })
         HistoryChart("Fuel level", fuel.map { it.value.toFloat() }, fuel.lastOrNull()?.let { "%.0f%%".format(it.value) })

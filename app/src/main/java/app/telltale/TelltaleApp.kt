@@ -9,6 +9,7 @@ import app.telltale.data.SettingsStore
 import app.telltale.data.db.TelltaleDb
 import app.telltale.phone.PhoneGps
 import app.telltale.service.CollectorService
+import app.telltale.service.ConnectReminder
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -29,6 +30,7 @@ class TelltaleApp : Application() {
         graph = AppGraph(this)
         CollectorService.createChannel(this)
         graph.recorder.start()
+        ConnectReminder(this, graph.repository, graph.scope).start()
         CarConnection(this).type.observeForever { type ->
             graph.repository.setConnection(
                 when (type) {

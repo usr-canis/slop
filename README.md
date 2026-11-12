@@ -55,6 +55,10 @@ Android Auto hides apps that didn't come from the Play Store until you turn on i
 | **History** | Odometer, fuel and range over time, plus a session log (connect/disconnect times) |
 | **Settings** | Recording, sample rate, units, data retention, export/import, delete all, update check |
 
+**Automatic logging:** recording is **on by default**. Every time Telltale runs on the car screen, all data is logged with no button to press. You can turn it off in Settings.
+If Android Auto connects but Telltale isn't open on the car screen, the phone shows a reminder after about 20 seconds: *"Open Telltale on your car screen"*.
+The reminder only appears if Telltale is still running in the background, because Android doesn't wake sideloaded apps when the car connects.
+
 **Status colours:** green = available · amber = unavailable · red = no permission · grey = unimplemented / not supported / unknown.
 
 ## 4. Update the app
