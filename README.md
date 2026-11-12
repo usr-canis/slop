@@ -146,8 +146,11 @@ Every push runs the **CI** workflow: build, unit tests and lint, and it uploads 
 ### Releasing
 
 1. Make sure the signing secrets are set up (below).
-2. Create a tag such as `v1.2.0` and push it. The **Release** workflow tests the code, builds a signed APK and publishes a GitHub Release with the APK attached.
-   The version number in the app comes from the tag.
+2. Either:
+   - create and push a tag such as `v1.2.0`, **or**
+   - change the number in `version.txt` (e.g. `1.2.0`) and commit with `[release]` in the commit message. On GitHub you can edit the file in the browser and type for example `Bump to 1.2.0 [release]` as the commit message.
+
+   The **Release** workflow tests the code, builds a signed APK and publishes a GitHub Release with the APK attached. The version number in the app comes from the tag or `version.txt`.
 
 If the signing secrets are missing, the release still gets built, but it's marked **Preview** and signed with a temporary key. Android refuses to update an app whose signature has changed, so when you later switch to your real key, uninstall the preview once.
 
