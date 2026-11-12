@@ -26,7 +26,19 @@ The two parts share data inside the app. Collection keeps running while the phon
 3. Tap the downloaded file. If Android asks, allow your browser or Files app to **"Install unknown apps"**, then tap **Install**.
 4. Open Telltale on the phone. Tap **Allow** for location, notifications and the car permissions (speed, fuel, mileage).
 
-## 2. Let Android Auto show a sideloaded app
+## 2. Automatic logging with Bluetooth (recommended, no car screen needed)
+
+This works the same way as Hejje.
+
+1. Open Telltale, go to **Settings → Your car**, and tap your car's Bluetooth name. The car must already be paired with the phone.
+2. Android asks whether Telltale may manage that device. Tap **Allow**. This "link" lets Android wake Telltale whenever the car connects.
+3. Tap **Allow all the time** for location, so logging keeps working with the phone locked.
+
+From then on, Telltale starts logging every time the car connects over Bluetooth and stops when it disconnects. You don't need to open anything.
+In this mode it logs **phone** data: GPS speed, location, heading and connect/disconnect times.
+**Car-only** data (fuel, odometer, range, the car's own speed and sensors) still needs Telltale open on the car screen (next step), because Android only hands that data to apps shown there.
+
+## 3. Let Android Auto show a sideloaded app (for car-only data)
 
 Android Auto hides apps that didn't come from the Play Store until you turn on its developer setting. You only do this once.
 
@@ -36,9 +48,16 @@ Android Auto hides apps that didn't come from the Play Store until you turn on i
 3. Tap the **⋮** menu (top right), then **Developer settings**.
 4. Turn on **Unknown sources**.
 5. Connect to your car (USB or wireless). Telltale now appears in the car's app launcher.
-   If you don't see it, open **Customize launcher** in Android Auto settings and enable Telltale.
 
-## 3. Use it
+**Still not on the car screen?** Telltale has this checklist under **Settings → Android Auto**:
+- Make sure **Unknown sources** is really ON (developer settings can reset after Android Auto updates).
+- Force-stop Android Auto (Settings → Apps → Android Auto → Force stop), then reconnect the car.
+- Android Auto settings → **Customize launcher** → tick Telltale.
+- Still missing? Uninstall Telltale, turn on Unknown sources **first**, then reinstall.
+
+The APK itself is verified to contain everything Android Auto needs: the car app service, the POI category, the car-app descriptor and the minimum API level.
+
+## 4. Use it
 
 1. Connect the phone to the car.
 2. On the **car screen**, open **Telltale** from the app launcher.
@@ -61,7 +80,7 @@ The reminder only appears if Telltale is still running in the background, becaus
 
 **Status colours:** green = available · amber = unavailable · red = no permission · grey = unimplemented / not supported / unknown.
 
-## 4. Update the app
+## 5. Update the app
 
 In **Settings → Check for updates**, Telltale asks GitHub for the newest release, shows its notes, downloads the APK and opens Android's installer.
 

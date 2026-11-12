@@ -26,6 +26,8 @@ class PhoneGps(private val context: Context, private val repo: CarDataRepository
         else repo.put(FieldReading(Fields.PHONE_SPEED, FieldStatus.UNAVAILABLE, timestampMillis = t))
         repo.put(FieldReading(Fields.PHONE_LOCATION, FieldStatus.AVAILABLE, "%.5f, %.5f".format(loc.latitude, loc.longitude),
             loc.accuracy.toDouble(), listOf(loc.latitude.toFloat(), loc.longitude.toFloat()), t))
+        if (loc.hasBearing() && loc.hasSpeed() && loc.speed > 1f) // bearing is noise when standing still
+            repo.put(FieldReading(Fields.PHONE_HEADING, FieldStatus.AVAILABLE, "%.0f°".format(loc.bearing), loc.bearing.toDouble(), timestampMillis = t))
     }
 
     @Synchronized fun acquire(user: String) { users += user; update() }

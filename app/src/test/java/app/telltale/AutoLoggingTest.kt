@@ -18,3 +18,16 @@ class AutoLoggingTest {
         assertFalse(needsCarScreenReminder(ConnectionState.UNKNOWN, SessionState.NONE))
     }
 }
+
+class BluetoothTriggerTest {
+    @Test fun loggingRunsForCarScreenOrBluetooth() {
+        org.junit.Assert.assertTrue(app.telltale.data.loggingActive(SessionState.ACTIVE, false))
+        org.junit.Assert.assertTrue(app.telltale.data.loggingActive(SessionState.NONE, true))
+        org.junit.Assert.assertTrue(app.telltale.data.loggingActive(SessionState.ACTIVE, true))
+        org.junit.Assert.assertFalse(app.telltale.data.loggingActive(SessionState.NONE, false))
+    }
+
+    @Test fun noCarChosenByDefault() {
+        org.junit.Assert.assertNull(AppSettings().carAddress)
+    }
+}

@@ -73,6 +73,7 @@ object Fields {
     const val SESSION = "host.sessionState"
     const val PHONE_SPEED = "phone.gpsSpeed"
     const val PHONE_LOCATION = "phone.location"
+    const val PHONE_HEADING = "phone.gpsHeading"
 
     val all: List<FieldDef> = listOf(
         FieldDef(MAKE, Groups.MODEL, "Make"),
@@ -107,6 +108,7 @@ object Fields {
         FieldDef(SESSION, Groups.HOST, "Car session"),
         FieldDef(PHONE_SPEED, Groups.PHONE, "Phone GPS speed"),
         FieldDef(PHONE_LOCATION, Groups.PHONE, "Phone GPS location"),
+        FieldDef(PHONE_HEADING, Groups.PHONE, "Phone GPS heading"),
     )
 
     private val byKey = all.associateBy { it.key }

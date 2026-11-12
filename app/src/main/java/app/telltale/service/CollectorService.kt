@@ -32,7 +32,7 @@ class CollectorService : LifecycleService() {
         super.onStartCommand(intent, flags, startId)
         val notification = NotificationCompat.Builder(this, CHANNEL)
             .setSmallIcon(R.drawable.ic_stat)
-            .setContentTitle("Telltale is collecting car data")
+            .setContentTitle("Telltale is logging your drive")
             .setContentText("Open the app to see live values")
             .setOngoing(true)
             .setContentIntent(PendingIntent.getActivity(this, 0, Intent(this, MainActivity::class.java), PendingIntent.FLAG_IMMUTABLE))
@@ -48,7 +48,7 @@ class CollectorService : LifecycleService() {
         super.onCreate()
         val repo = TelltaleApp.graph.repository
         lifecycleScope.launch {
-            combine(repo.connection, repo.session) { c, s -> c != ConnectionState.PROJECTION && s == SessionState.NONE }
+            combine(repo.connection, repo.session, repo.carNearby) { c, s, near -> c != ConnectionState.PROJECTION && s == SessionState.NONE && !near }
                 .collectLatest { idle ->
                     if (idle) { delay(30_000); stopSelf() }
                 }

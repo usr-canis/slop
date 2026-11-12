@@ -72,6 +72,12 @@ fun SettingsScreen() {
     }
 
     Column(Modifier.verticalScroll(rememberScrollState()).padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        SectionTitle("Your car (automatic logging)")
+        CarSection()
+
+        SectionTitle("Android Auto")
+        AndroidAutoHelp()
+
         SectionTitle("Recording")
         Panel(Modifier.fillMaxWidth()) {
             Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {

@@ -7,6 +7,8 @@ import app.telltale.model.FieldReading
 import app.telltale.model.Fields
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -54,12 +56,13 @@ class Recorder(
             }
         }
         scope.launch {
-            repo.session.collect { st ->
+            combine(repo.session, repo.carNearby, ::loggingActive).distinctUntilChanged().collect { active ->
                 lock.withLock {
-                    if (st == SessionState.ACTIVE && sessionId == null) {
+                    if (active && sessionId == null) {
                         sampler.reset()
-                        sessionId = dao.insertSession(SessionEntity(startedAt = System.currentTimeMillis(), connectionType = repo.connection.value.label))
-                    } else if (st == SessionState.NONE && sessionId != null) {
+                        val type = if (repo.session.value == SessionState.ACTIVE) repo.connection.value.label else "Bluetooth (phone data)"
+                        sessionId = dao.insertSession(SessionEntity(startedAt = System.currentTimeMillis(), connectionType = type))
+                    } else if (!active && sessionId != null) {
                         flushLocked()
                         dao.endSession(sessionId!!, System.currentTimeMillis())
                         sessionId = null

@@ -13,6 +13,9 @@ import app.telltale.service.ConnectReminder
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
+import app.telltale.phone.CarLink
 
 /** Simple manual dependency container. */
 class AppGraph(app: Application) {
@@ -22,6 +25,15 @@ class AppGraph(app: Application) {
     val settings = SettingsStore(app)
     val phoneGps = PhoneGps(app, repository)
     val recorder = Recorder(scope, repository, db.dao(), settings)
+    private val app = app
+
+    /** The user's car connected over Bluetooth: start logging phone data in the background. */
+    fun carConnected() {
+        repository.setCarNearby(true)
+        CollectorService.tryStart(app)
+    }
+
+    fun carDisconnected() = repository.setCarNearby(false)
 }
 
 class TelltaleApp : Application() {
@@ -31,6 +43,13 @@ class TelltaleApp : Application() {
         CollectorService.createChannel(this)
         graph.recorder.start()
         ConnectReminder(this, graph.repository, graph.scope).start()
+        // If the chosen car is already connected (e.g. app restarted mid-drive), pick that up.
+        graph.scope.launch {
+            graph.settings.settings.first().carAddress?.let { addr ->
+                CarLink.observe(this@TelltaleApp, addr)
+                CarLink.isConnected(this@TelltaleApp, addr) { if (it) graph.carConnected() }
+            }
+        }
         CarConnection(this).type.observeForever { type ->
             graph.repository.setConnection(
                 when (type) {

@@ -22,6 +22,9 @@ enum class ConnectionState(val label: String) {
 
 enum class SessionState { NONE, ACTIVE }
 
+/** Logging runs while the car-screen session is active OR the user's car is connected over Bluetooth. */
+fun loggingActive(session: SessionState, carNearby: Boolean) = session == SessionState.ACTIVE || carNearby
+
 /**
  * Single in-memory source of truth shared by the car session (writer)
  * and the phone UI / recorder (readers). Lives as long as the app process.
@@ -35,6 +38,12 @@ class CarDataRepository {
 
     private val _session = MutableStateFlow(SessionState.NONE)
     val session: StateFlow<SessionState> = _session.asStateFlow()
+
+    private val _carNearby = MutableStateFlow(false)
+    /** The user's chosen car is connected to the phone over Bluetooth. */
+    val carNearby: StateFlow<Boolean> = _carNearby.asStateFlow()
+
+    fun setCarNearby(v: Boolean) { _carNearby.value = v }
 
     private val _updates = MutableSharedFlow<FieldReading>(extraBufferCapacity = 512, onBufferOverflow = BufferOverflow.DROP_OLDEST)
     /** Every single update, for the recorder. */

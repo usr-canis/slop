@@ -37,6 +37,7 @@ class MainActivity : ComponentActivity() {
         val list = buildList {
             addAll(CarDataCollector.ALL_PERMISSIONS)
             add(Manifest.permission.ACCESS_COARSE_LOCATION)
+            if (Build.VERSION.SDK_INT >= 31) add(Manifest.permission.BLUETOOTH_CONNECT)
             if (Build.VERSION.SDK_INT >= 33) add(Manifest.permission.POST_NOTIFICATIONS)
         }
         permissions.launch(list.toTypedArray())

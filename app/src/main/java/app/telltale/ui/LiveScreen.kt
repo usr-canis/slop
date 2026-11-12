@@ -122,9 +122,10 @@ fun LiveScreen() {
             Panel(Modifier.weight(1f)) {
                 Column {
                     Label("Heading")
-                    val h = f.num(Fields.COMPASS)
+                    val car = f.num(Fields.COMPASS)
+                    val h = car ?: f.num(Fields.PHONE_HEADING)
                     BigValue(h?.let { "%.0f°".format(it) } ?: "—", h?.let { CarDataMapper.cardinal(it) })
-                    StatusLine(f, Fields.COMPASS)
+                    if (car == null && h != null) Mono("from phone GPS") else StatusLine(f, Fields.COMPASS)
                 }
             }
             Panel(Modifier.weight(1f)) {

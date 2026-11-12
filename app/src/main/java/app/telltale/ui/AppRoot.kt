@@ -76,12 +76,15 @@ fun ConnectionBanner() {
     val repo = TelltaleApp.graph.repository
     val conn by repo.connection.collectAsStateWithLifecycle()
     val session by repo.session.collectAsStateWithLifecycle()
+    val nearby by repo.carNearby.collectAsStateWithLifecycle()
     val (status, title, hint) = when {
         session == SessionState.ACTIVE -> Triple(FieldStatus.AVAILABLE, "Collecting car data", conn.label)
+        nearby && conn != ConnectionState.PROJECTION ->
+            Triple(FieldStatus.AVAILABLE, "Car connected · logging phone data", "Bluetooth link. Car-only data (fuel, odometer) needs Telltale on the car screen")
         conn == ConnectionState.PROJECTION || conn == ConnectionState.NATIVE ->
             Triple(FieldStatus.UNAVAILABLE, "Connected to Android Auto", "Open Telltale on your car screen to start reading data")
         conn == ConnectionState.UNKNOWN -> Triple(FieldStatus.WAITING, "Checking connection…", "")
-        else -> Triple(FieldStatus.UNKNOWN, "Not connected", "Connect your phone to Android Auto (USB or wireless)")
+        else -> Triple(FieldStatus.UNKNOWN, "Not connected", "Pick your car in Settings to log automatically, or connect Android Auto")
     }
     Row(
         Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surfaceContainer).statusBarsPadding().padding(horizontal = 16.dp, vertical = 10.dp),
