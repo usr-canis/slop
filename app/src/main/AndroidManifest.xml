@@ -6,6 +6,8 @@
     <uses-permission android:name="com.google.android.gms.permission.CAR_SPEED" />
     <uses-permission android:name="com.google.android.gms.permission.CAR_FUEL" />
     <uses-permission android:name="com.google.android.gms.permission.CAR_MILEAGE" />
+    <!-- Required by Android Auto for apps that declare the NAVIGATION category. -->
+    <uses-permission android:name="androidx.car.app.NAVIGATION_TEMPLATES" />
     <!-- Car hardware location + phone GPS speed -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
@@ -62,14 +64,18 @@
             </intent-filter>
         </activity>
 
-        <!-- Minimal projected car app session. Category differs per build variant (poi / nav / iot). -->
+        <!-- Minimal projected car app session. -->
         <service
             android:name=".car.TelltaleCarAppService"
             android:exported="true"
             tools:ignore="ExportedService">
             <intent-filter>
                 <action android:name="androidx.car.app.CarAppService" />
-                <category android:name="${carCategory}" />
+                <!-- Several categories so Android Auto lists the app whichever one it accepts
+                     for sideloaded apps. Intent matching accepts any declared category. -->
+                <category android:name="androidx.car.app.category.NAVIGATION" />
+                <category android:name="androidx.car.app.category.IOT" />
+                <category android:name="androidx.car.app.category.POI" />
             </intent-filter>
         </service>
 

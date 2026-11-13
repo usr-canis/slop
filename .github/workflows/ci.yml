@@ -22,7 +22,7 @@ jobs:
       - name: Install Android SDK platform 37
         run: yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-37.0" "build-tools;37.0.0" > /dev/null
       - name: Build, unit test and lint
-        run: ./gradlew --no-configuration-cache :app:assembleDebug :app:testPoiDebugUnitTest :app:lintPoiDebug
+        run: ./gradlew --no-configuration-cache :app:assembleDebug :app:testDebugUnitTest :app:lintDebug
       - name: Upload reports
         if: always()
         uses: actions/upload-artifact@v7
@@ -35,4 +35,4 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: telltale-debug-apk
-          path: app/build/outputs/apk/*/debug/*.apk
+          path: app/build/outputs/apk/debug/*.apk

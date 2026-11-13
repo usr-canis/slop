@@ -22,9 +22,7 @@ The two parts share data inside the app. Collection keeps running while the phon
 ## 1. Install the app (sideload)
 
 1. On your phone, open the [latest release](https://github.com/usr-canis/slop/releases/latest).
-2. Download the APKs. Since v0.4.0 there are three variants that install side by side and differ only in how they present themselves to Android Auto:
-   `telltale-poi-…` (**Telltale**), `telltale-nav-…` (**Telltale Nav**) and `telltale-iot-…` (**Telltale IoT**).
-   Some Android Auto versions only list certain kinds of sideloaded car apps, so install all three, see which appears on your car screen, and uninstall the others.
+2. Download the file named `telltale-vX.Y.Z.apk`. If you installed **Telltale Nav** or **Telltale IoT** from v0.4.0, uninstall them; this single app replaces them.
 3. Tap the downloaded file. If Android asks, allow your browser or Files app to **"Install unknown apps"**, then tap **Install**.
 4. Open Telltale on the phone. Tap **Allow** for location, notifications and the car permissions (speed, fuel, mileage).
 
@@ -161,7 +159,7 @@ Google's **Desktop Head Unit (DHU)** shows a fake car screen on your computer an
 
 You need Android Studio, or just JDK 21 and the Android SDK.
 ```
-./gradlew assembleDebug testPoiDebugUnitTest lintPoiDebug
+./gradlew assembleDebug testDebugUnitTest lintDebug
 ```
 
 ### CI

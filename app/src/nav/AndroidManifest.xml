@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- Required by Android Auto for apps in the NAVIGATION category. -->
-    <uses-permission android:name="androidx.car.app.NAVIGATION_TEMPLATES" />
-</manifest>
