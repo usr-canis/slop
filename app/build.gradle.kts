@@ -30,6 +30,29 @@ android {
         buildConfigField("boolean", "RELEASE_KEY", hasReleaseKey.toString())
     }
 
+    // Three otherwise identical variants that present themselves to Android Auto under different
+    // car-app categories, to find which one a given Android Auto version lists for sideloaded apps.
+    flavorDimensions += "category"
+    productFlavors {
+        create("poi") {
+            dimension = "category"
+            manifestPlaceholders["carCategory"] = "androidx.car.app.category.POI"
+            resValue("string", "app_name", "Telltale")
+        }
+        create("nav") {
+            dimension = "category"
+            applicationIdSuffix = ".nav"
+            manifestPlaceholders["carCategory"] = "androidx.car.app.category.NAVIGATION"
+            resValue("string", "app_name", "Telltale Nav")
+        }
+        create("iot") {
+            dimension = "category"
+            applicationIdSuffix = ".iot"
+            manifestPlaceholders["carCategory"] = "androidx.car.app.category.IOT"
+            resValue("string", "app_name", "Telltale IoT")
+        }
+    }
+
     signingConfigs {
         if (hasReleaseKey) {
             create("release") {
@@ -55,6 +78,7 @@ android {
     buildFeatures {
         compose = true
         buildConfig = true
+        resValues = true
     }
 
     compileOptions {

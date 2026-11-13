@@ -30,10 +30,12 @@ object Versions {
         return false
     }
 
-    fun parseRelease(json: String): ReleaseInfo {
+    /** Picks the APK for this build variant ("telltale-nav-v1.0.0.apk"); falls back to any APK for old releases. */
+    fun parseRelease(json: String, flavor: String = ""): ReleaseInfo {
         val o: JsonObject = Json.parseToJsonElement(json).jsonObject
-        val apk = o["assets"]?.jsonArray?.map { it.jsonObject }
-            ?.firstOrNull { it["name"]?.jsonPrimitive?.content?.endsWith(".apk") == true }
+        val apks = o["assets"]?.jsonArray?.map { it.jsonObject }
+            ?.filter { it["name"]?.jsonPrimitive?.content?.endsWith(".apk") == true }.orEmpty()
+        val apk = (apks.firstOrNull { it["name"]?.jsonPrimitive?.content?.startsWith("telltale-$flavor-") == true } ?: apks.firstOrNull())
             ?.get("browser_download_url")?.jsonPrimitive?.content
         val tag = o["tag_name"]?.jsonPrimitive?.content ?: error("No tag in release")
         return ReleaseInfo(
@@ -47,7 +49,7 @@ object Versions {
 }
 
 /** Checks the public GitHub "latest release" API (no token) and installs the APK via the system installer. */
-class UpdateChecker(private val context: Context, private val repo: String) {
+class UpdateChecker(private val context: Context, private val repo: String, private val flavor: String = "") {
 
     suspend fun latest(): ReleaseInfo = withContext(Dispatchers.IO) {
         val c = URL("https://api.github.com/repos/$repo/releases/latest").openConnection() as HttpURLConnection
@@ -57,7 +59,7 @@ class UpdateChecker(private val context: Context, private val repo: String) {
         try {
             if (c.responseCode == 404) error("No releases published yet")
             if (c.responseCode !in 200..299) error("GitHub returned HTTP ${c.responseCode}")
-            Versions.parseRelease(c.inputStream.bufferedReader().readText())
+            Versions.parseRelease(c.inputStream.bufferedReader().readText(), flavor)
         } finally { c.disconnect() }
     }
 

@@ -62,7 +62,13 @@ class ExportTest {
             "assets":[{"name":"notes.txt","browser_download_url":"https://a"},{"name":"telltale-1.2.0.apk","browser_download_url":"https://b.apk"}]}"""
         val r = Versions.parseRelease(json)
         assertEquals("v1.2.0", r.tag)
-        assertEquals("https://b.apk", r.apkUrl)
+        assertEquals("https://b.apk", r.apkUrl) // old single-APK release: any APK
+        val multi = """{"tag_name":"v0.4.0","assets":[
+            {"name":"telltale-iot-v0.4.0.apk","browser_download_url":"https://iot"},
+            {"name":"telltale-nav-v0.4.0.apk","browser_download_url":"https://nav"},
+            {"name":"telltale-poi-v0.4.0.apk","browser_download_url":"https://poi"}]}"""
+        assertEquals("https://nav", Versions.parseRelease(multi, "nav").apkUrl)
+        assertEquals("https://poi", Versions.parseRelease(multi, "poi").apkUrl)
         assertEquals("Notes", r.notes)
     }
 }

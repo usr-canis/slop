@@ -51,12 +51,12 @@ jobs:
           TELLTALE_KEYSTORE_PASSWORD: ${{ secrets.TELLTALE_KEYSTORE_PASSWORD }}
           TELLTALE_KEY_ALIAS: ${{ secrets.TELLTALE_KEY_ALIAS }}
           TELLTALE_KEY_PASSWORD: ${{ secrets.TELLTALE_KEY_PASSWORD }}
-        run: ./gradlew --no-configuration-cache :app:testDebugUnitTest :app:lintDebug :app:assembleRelease -PappVersion=${VERSION}
+        run: ./gradlew --no-configuration-cache :app:testPoiDebugUnitTest :app:lintPoiDebug :app:assembleRelease -PappVersion=${VERSION}
 
       - name: Prepare files
         run: |
           mkdir dist
-          cp app/build/outputs/apk/release/app-release.apk "dist/telltale-${VERSION}.apk"
+          for f in poi nav iot; do cp "app/build/outputs/apk/$f/release/app-$f-release.apk" "dist/telltale-$f-${VERSION}.apk"; done
           (cd dist && sha256sum *.apk > SHA256SUMS.txt)
           rm -f "$RUNNER_TEMP/release.jks"
           {
@@ -67,7 +67,11 @@ jobs:
               echo "When you switch to the real key, uninstall this version once before installing the next one."
               echo
             fi
-            echo "Install: download the .apk below on your phone and open it."
+            echo "Three variants, identical except for the category they show to Android Auto. They install side by side:"
+            echo "- telltale-poi: \"Telltale\" (point-of-interest app, the original)"
+            echo "- telltale-nav: \"Telltale Nav\" (navigation app)"
+            echo "- telltale-iot: \"Telltale IoT\" (connected-device app)"
+            echo "If one doesn't appear on your car screen, try the others and keep the one that shows up."
           } > dist/NOTES.md
 
       - name: Publish GitHub Release

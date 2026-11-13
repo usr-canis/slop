@@ -120,7 +120,7 @@ fun SettingsScreen() {
                     update = UpdateUi(checking = true)
                     scope.launch {
                         update = try {
-                            val r = UpdateChecker(ctx, BuildConfig.GITHUB_REPO).latest()
+                            val r = UpdateChecker(ctx, BuildConfig.GITHUB_REPO, BuildConfig.FLAVOR).latest()
                             UpdateUi(release = r, newer = Versions.isNewer(r.tag, BuildConfig.VERSION_NAME))
                         } catch (e: Exception) { UpdateUi(error = e.message ?: "Update check failed") }
                     }
@@ -132,6 +132,7 @@ fun SettingsScreen() {
         Panel(Modifier.fillMaxWidth()) {
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 Text("Telltale ${BuildConfig.VERSION_NAME}")
+                Mono("Car screen variant: ${BuildConfig.FLAVOR.uppercase()} category")
                 Mono("Reads car data via Android Auto (Car App Library 1.7.0) and shows it on your phone.")
                 Mono("Source: github.com/${BuildConfig.GITHUB_REPO}")
                 if (!BuildConfig.RELEASE_KEY) Mono("Preview build: signed with a temporary key.", color = MaterialTheme.colorScheme.error)
@@ -180,7 +181,7 @@ private fun UpdateDialog(u: UpdateUi, onChange: (UpdateUi) -> Unit, onDismiss: (
         },
         confirmButton = {
             if (u.newer && r?.apkUrl != null && u.progress == null) TextButton(onClick = {
-                val checker = UpdateChecker(ctx, BuildConfig.GITHUB_REPO)
+                val checker = UpdateChecker(ctx, BuildConfig.GITHUB_REPO, BuildConfig.FLAVOR)
                 if (!checker.canInstall()) { checker.openUnknownSourcesSettings(); toast(ctx, "Allow Telltale to install apps, then tap again"); return@TextButton }
                 onChange(u.copy(progress = 0f))
                 scope.launch {
